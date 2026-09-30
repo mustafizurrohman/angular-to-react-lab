@@ -1,17 +1,23 @@
-import { useState, useReducer } from 'react'
+import { useState, useReducer, useMemo, useCallback } from 'react'
+import type { FormEvent } from 'react'
 import type { CartItem, CartAction } from '../types/state.ts'
 import { INITIAL_CART_ITEMS } from '../data/stateData.ts'
 
 function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
   switch (action.type) {
     case 'ADD_ITEM': {
-      const existing = state.find((item) => item.name.toLowerCase() === action.payload.name.toLowerCase())
+      const existing = state.find(
+        (item) => item.name.toLowerCase() === action.payload.name.toLowerCase(),
+      )
       if (existing) {
         return state.map((item) =>
           item.id === existing.id ? { ...item, quantity: item.quantity + 1 } : item,
         )
       }
-      return [...state, { id: Date.now().toString(), name: action.payload.name, quantity: 1 }]
+      return [
+        ...state,
+        { id: action.payload.id, name: action.payload.name, quantity: 1 },
+      ]
     }
     case 'INCREMENT':
       return state.map((item) =>
@@ -36,30 +42,43 @@ export function useCart(initialItems: CartItem[] = INITIAL_CART_ITEMS) {
   const [cart, dispatch] = useReducer(cartReducer, initialItems)
   const [newItemName, setNewItemName] = useState('')
 
-  const handleAddItem = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newItemName.trim()) return
-    dispatch({ type: 'ADD_ITEM', payload: { name: newItemName.trim() } })
-    setNewItemName('')
-  }
+  const handleAddItem = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault()
+      const trimmed = newItemName.trim()
+      if (!trimmed) return
 
-  const increment = (id: string) => {
+      const newId =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `item-${Date.now()}`
+
+      dispatch({ type: 'ADD_ITEM', payload: { id: newId, name: trimmed } })
+      setNewItemName('')
+    },
+    [newItemName],
+  )
+
+  const increment = useCallback((id: string) => {
     dispatch({ type: 'INCREMENT', payload: { id } })
-  }
+  }, [])
 
-  const decrement = (id: string) => {
+  const decrement = useCallback((id: string) => {
     dispatch({ type: 'DECREMENT', payload: { id } })
-  }
+  }, [])
 
-  const removeItem = (id: string) => {
+  const removeItem = useCallback((id: string) => {
     dispatch({ type: 'REMOVE', payload: { id } })
-  }
+  }, [])
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     dispatch({ type: 'CLEAR' })
-  }
+  }, [])
 
-  const totalItems = cart.reduce((acc, curr) => acc + curr.quantity, 0)
+  const totalItems = useMemo(
+    () => cart.reduce((acc, curr) => acc + curr.quantity, 0),
+    [cart],
+  )
 
   return {
     cart,

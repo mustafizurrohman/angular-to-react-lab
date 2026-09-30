@@ -1,5 +1,6 @@
 import { useCounterWithHistory } from '../hooks/useCounterWithHistory.ts'
 import { useCart } from '../hooks/useCart.ts'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import { PageHeader } from '../components/common/PageHeader.tsx'
 import { SectionHeader } from '../components/common/SectionHeader.tsx'
 import { CounterPlayground } from '../components/state/CounterPlayground.tsx'
@@ -9,6 +10,8 @@ import { CartInspector } from '../components/state/CartInspector.tsx'
 import './Pages.css'
 
 export function StateLab() {
+  useDocumentTitle('Interactive State')
+
   const { count, step, history, setStep, updateCount, handleReset } = useCounterWithHistory()
   const {
     cart,

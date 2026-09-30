@@ -1,5 +1,6 @@
 import { usePatternFilter } from '../hooks/usePatternFilter.ts'
 import { useClipboard } from '../hooks/useClipboard.ts'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import { PageHeader } from '../components/common/PageHeader.tsx'
 import { EmptyState } from '../components/common/EmptyState.tsx'
 import { PatternFilterBar } from '../components/migration/PatternFilterBar.tsx'
@@ -7,6 +8,8 @@ import { PatternCard } from '../components/migration/PatternCard.tsx'
 import './Pages.css'
 
 export function AngularToReact() {
+  useDocumentTitle('Angular to React Migration')
+
   const {
     selectedCategory,
     setSelectedCategory,

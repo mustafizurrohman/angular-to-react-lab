@@ -15,6 +15,8 @@ export function NavIcon({ icon }: NavIconProps) {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
         >
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
@@ -31,6 +33,8 @@ export function NavIcon({ icon }: NavIconProps) {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
         >
           <line x1="4" y1="21" x2="4" y2="14" />
           <line x1="4" y1="10" x2="4" y2="3" />
@@ -54,6 +58,8 @@ export function NavIcon({ icon }: NavIconProps) {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
         >
           <circle cx="12" cy="12" r="10" />
           <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
@@ -70,6 +76,8 @@ export function NavIcon({ icon }: NavIconProps) {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
         >
           <polyline points="16 18 22 12 16 6" />
           <polyline points="8 6 2 12 8 18" />
@@ -86,6 +94,8 @@ export function NavIcon({ icon }: NavIconProps) {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
         >
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="16" x2="12" y2="12" />

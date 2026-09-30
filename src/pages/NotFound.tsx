@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/common/PageHeader.tsx'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import './Pages.css'
 
 export function NotFound() {
+  useDocumentTitle('404 Not Found')
+
   return (
     <div className="page-wrapper text-center">
       <PageHeader

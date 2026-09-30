@@ -1,4 +1,5 @@
 import { useRoutingLab } from '../hooks/useRoutingLab.ts'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import { PageHeader } from '../components/common/PageHeader.tsx'
 import { SectionHeader } from '../components/common/SectionHeader.tsx'
 import { RoutingControls } from '../components/routing/RoutingControls.tsx'
@@ -8,6 +9,8 @@ import { ProgrammaticNavActions } from '../components/routing/ProgrammaticNavAct
 import './Pages.css'
 
 export function RoutingLab() {
+  useDocumentTitle('Client-Side Routing')
+
   const {
     currentCategory,
     searchQuery,

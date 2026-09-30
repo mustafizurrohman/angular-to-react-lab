@@ -2,9 +2,12 @@ import { LAB_MODULES } from '../data/labModules.ts'
 import { HeroBanner } from '../components/home/HeroBanner.tsx'
 import { ModuleCard } from '../components/home/ModuleCard.tsx'
 import { SectionHeader } from '../components/common/SectionHeader.tsx'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import './Pages.css'
 
 export function Home() {
+  useDocumentTitle('Home')
+
   return (
     <div className="page-wrapper">
       <HeroBanner />

@@ -3,9 +3,12 @@ import { PageHeader } from '../components/common/PageHeader.tsx'
 import { SectionHeader } from '../components/common/SectionHeader.tsx'
 import { PrincipleCard } from '../components/about/PrincipleCard.tsx'
 import { RoadmapStepCard } from '../components/about/RoadmapStepCard.tsx'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import './Pages.css'
 
 export function About() {
+  useDocumentTitle('Architectural Foundations')
+
   return (
     <div className="page-wrapper">
       <PageHeader
@@ -20,8 +23,8 @@ export function About() {
         />
 
         <div className="card-grid">
-          {ARCHITECTURAL_PRINCIPLES.map((item, index) => (
-            <PrincipleCard key={index} principle={item} />
+          {ARCHITECTURAL_PRINCIPLES.map((item) => (
+            <PrincipleCard key={item.title} principle={item} />
           ))}
         </div>
       </div>

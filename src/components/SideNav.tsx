@@ -18,16 +18,22 @@ export function SideNav({ isOpen, onClose }: SideNavProps) {
           aria-hidden="true"
         />
       )}
-      <aside className={`sidenav ${isOpen ? 'open' : ''}`}>
+      <aside
+        id="main-sidebar"
+        className={`sidenav ${isOpen ? 'open' : ''}`}
+        aria-label="Navigation sidebar"
+      >
         <div className="sidenav-header">
-          <div className="logo-badge">⚛️</div>
+          <div className="logo-badge" aria-hidden="true">
+            ⚛️
+          </div>
           <div className="brand-text">
             <h2>React Lab</h2>
             <span className="brand-sub">Angular to React</span>
           </div>
         </div>
 
-        <nav className="sidenav-nav">
+        <nav className="sidenav-nav" aria-label="Main navigation">
           {NAVIGATION_ITEMS.map((item) => (
             <NavLink
               key={item.to}

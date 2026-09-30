@@ -23,11 +23,13 @@ export function CodePane({
           type="button"
           className="copy-btn"
           onClick={() => onCopy(code, copyId)}
+          aria-label={`Copy ${label} code`}
+          aria-live="polite"
         >
           {isCopied ? 'Copied!' : 'Copy'}
         </button>
       </div>
-      <pre className="code-block">
+      <pre className="code-block" tabIndex={0} aria-label={`${label} code snippet`}>
         <code>{code}</code>
       </pre>
     </div>

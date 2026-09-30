@@ -23,19 +23,28 @@ export function PatternFilterBar({
         onChange={(e) => onSearchChange(e.target.value)}
         className="text-input"
         style={{ maxWidth: '400px' }}
+        aria-label="Search migration patterns"
       />
 
-      <div className="category-tabs">
-        {MIGRATION_CATEGORY_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`tab-btn ${selectedCategory === tab.id ? 'active' : ''}`}
-            onClick={() => onCategoryChange(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div
+        className="category-tabs"
+        role="group"
+        aria-label="Filter patterns by category"
+      >
+        {MIGRATION_CATEGORY_TABS.map((tab) => {
+          const isActive = selectedCategory === tab.id
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              className={`tab-btn ${isActive ? 'active' : ''}`}
+              onClick={() => onCategoryChange(tab.id)}
+              aria-pressed={isActive}
+            >
+              {tab.label}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

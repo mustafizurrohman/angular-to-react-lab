@@ -38,17 +38,21 @@ export function RoutingControls({
         <span className="control-label">
           Category (<code>category</code>):
         </span>
-        <div className="filter-buttons">
-          {ROUTING_CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              className={`filter-btn ${currentCategory === cat.id ? 'active' : ''}`}
-              onClick={() => onUpdateParam('category', cat.id)}
-            >
-              {cat.label}
-            </button>
-          ))}
+        <div className="filter-buttons" role="group" aria-label="Filter by category">
+          {ROUTING_CATEGORIES.map((cat) => {
+            const isActive = currentCategory === cat.id
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                className={`filter-btn ${isActive ? 'active' : ''}`}
+                onClick={() => onUpdateParam('category', cat.id)}
+                aria-pressed={isActive}
+              >
+                {cat.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 

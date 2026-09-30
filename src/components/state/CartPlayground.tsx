@@ -37,12 +37,17 @@ export function CartPlayground({
       </div>
 
       <form onSubmit={onAddItem} className="add-item-form">
+        <label htmlFor="cart-item-name-input" className="sr-only" style={{ display: 'none' }}>
+          Add learning resource
+        </label>
         <input
+          id="cart-item-name-input"
           type="text"
           placeholder="Add learning resource..."
           value={newItemName}
           onChange={(e) => onNewItemNameChange(e.target.value)}
           className="text-input"
+          aria-label="Add learning resource"
         />
         <button type="submit" className="counter-btn" disabled={!newItemName.trim()}>
           Add Resource
@@ -61,16 +66,18 @@ export function CartPlayground({
                   type="button"
                   className="qty-btn"
                   onClick={() => onDecrement(item.id)}
-                  aria-label="Decrease quantity"
+                  aria-label={`Decrease quantity of ${item.name}`}
                 >
                   -
                 </button>
-                <span className="cart-item-qty">{item.quantity}</span>
+                <span className="cart-item-qty" aria-label={`Quantity: ${item.quantity}`}>
+                  {item.quantity}
+                </span>
                 <button
                   type="button"
                   className="qty-btn"
                   onClick={() => onIncrement(item.id)}
-                  aria-label="Increase quantity"
+                  aria-label={`Increase quantity of ${item.name}`}
                 >
                   +
                 </button>
@@ -78,9 +85,9 @@ export function CartPlayground({
                   type="button"
                   className="remove-btn"
                   onClick={() => onRemove(item.id)}
-                  aria-label="Remove item"
+                  aria-label={`Remove ${item.name} from cart`}
                 >
-                  ×
+                  &times;
                 </button>
               </div>
             </li>
