@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { NAVIGATION_ITEMS } from '../data/navigationData.ts'
 import { NavIcon } from './navigation/NavIcon.tsx'
+import { useAuth } from '../hooks/useAuth.ts'
 import './SideNav.css'
 
 interface SideNavProps {
@@ -9,6 +10,8 @@ interface SideNavProps {
 }
 
 export function SideNav({ isOpen, onClose }: SideNavProps) {
+  const { user, logout } = useAuth()
+
   return (
     <>
       {isOpen && (
@@ -51,6 +54,23 @@ export function SideNav({ isOpen, onClose }: SideNavProps) {
         </nav>
 
         <div className="sidenav-footer">
+          {user && (
+            <div className="sidenav-user-card">
+              <div className="user-info">
+                <span className="user-icon" aria-hidden="true">👤</span>
+                <span className="user-name">{user.username}</span>
+              </div>
+              <button
+                type="button"
+                className="logout-btn"
+                onClick={logout}
+                title="Log out"
+                aria-label="Log out"
+              >
+                Log out
+              </button>
+            </div>
+          )}
           <div className="version-info">
             <span className="badge">v1.0.0</span>
             <span className="muted-text">React 19 + Vite</span>
