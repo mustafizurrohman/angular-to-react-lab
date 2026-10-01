@@ -96,12 +96,6 @@ export function LoginMask() {
             />
           </div>
 
-          <div className="login-hint">
-            <span>
-              Credentials: username <code>demo</code> / password <code>demo</code>
-            </span>
-          </div>
-
           <button type="submit" className="login-submit-button">
             Sign In
           </button>
