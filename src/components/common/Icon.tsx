@@ -1,124 +1,81 @@
-import type { ComponentType, CSSProperties } from 'react'
-import type { IconProps as PhosphorIconProps, IconWeight } from '@phosphor-icons/react'
-import {
-  Atom,
-  House,
-  Cpu,
-  Compass,
-  ArrowsLeftRight,
-  Info,
-  User,
-  SignOut,
-  WarningCircle,
-  Warning,
-  List,
-  X,
-  Copy,
-  Check,
-  ArrowRight,
-  ArrowLeft,
-  Plus,
-  Minus,
-  Trash,
-  PuzzlePiece,
-  Waves,
-  Lightning,
-  RocketLaunch,
-  MagnifyingGlass,
-  Sparkle,
-} from '@phosphor-icons/react'
+import { createElement } from 'react';
+import type { CSSProperties, ElementType } from 'react';
+import type { IconProps, IconWeight } from '@phosphor-icons/react';
+import * as PhosphorIcons from '@phosphor-icons/react';
 
-export type IconName =
-  | 'atom'
-  | 'home'
-  | 'state'
-  | 'routing'
-  | 'migration'
-  | 'about'
-  | 'user'
-  | 'logout'
-  | 'sign-out'
-  | 'warning-circle'
-  | 'warning'
-  | 'menu'
-  | 'close'
-  | 'copy'
-  | 'check'
-  | 'arrow-right'
-  | 'arrow-left'
-  | 'plus'
-  | 'minus'
-  | 'trash'
-  | 'puzzle'
-  | 'waves'
-  | 'lightning'
-  | 'rocket'
-  | 'search'
-  | 'sparkle'
+type PhosphorIconComponent = ElementType<IconProps>;
+
+const ICON_ALIASES = {
+  home: 'House',
+  state: 'Cpu',
+  routing: 'Compass',
+  migration: 'ArrowsLeftRight',
+  about: 'Info',
+  logout: 'SignOut',
+  'sign-out': 'SignOut',
+  menu: 'List',
+  close: 'X',
+  puzzle: 'PuzzlePiece',
+  rocket: 'RocketLaunch',
+  search: 'MagnifyingGlass',
+} as const;
+
+export type IconName = string;
 
 export interface AppIconProps {
-  name: IconName
-  size?: number | string
-  weight?: IconWeight
-  color?: string
-  className?: string
-  style?: CSSProperties
-  'aria-hidden'?: boolean | 'true' | 'false'
-  'aria-label'?: string
+  name: IconName;
+  size?: number | string;
+  weight?: IconWeight;
+  color?: string;
+  className?: string;
+  style?: CSSProperties;
+  'aria-hidden'?: boolean | 'true' | 'false';
+  'aria-label'?: string;
 }
 
-export const ICON_REGISTRY: Record<IconName, ComponentType<PhosphorIconProps>> = {
-  atom: Atom,
-  home: House,
-  state: Cpu,
-  routing: Compass,
-  migration: ArrowsLeftRight,
-  about: Info,
-  user: User,
-  logout: SignOut,
-  'sign-out': SignOut,
-  'warning-circle': WarningCircle,
-  warning: Warning,
-  menu: List,
-  close: X,
-  copy: Copy,
-  check: Check,
-  'arrow-right': ArrowRight,
-  'arrow-left': ArrowLeft,
-  plus: Plus,
-  minus: Minus,
-  trash: Trash,
-  puzzle: PuzzlePiece,
-  waves: Waves,
-  lightning: Lightning,
-  rocket: RocketLaunch,
-  search: MagnifyingGlass,
-  sparkle: Sparkle,
+function toPascalCase(name: string): string {
+  return name
+      .split(/[-_\s]+/)
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('');
+}
+
+function resolveIcon(name: IconName): PhosphorIconComponent | null {
+  const iconName =
+      ICON_ALIASES[name as keyof typeof ICON_ALIASES] ??
+      toPascalCase(name);
+
+  const icon = (PhosphorIcons as Record<string, unknown>)[iconName];
+
+  return typeof icon === 'function' || (typeof icon === 'object' && icon !== null)
+      ? (icon as PhosphorIconComponent)
+      : null;
 }
 
 export function Icon({
-  name,
-  size = 20,
-  weight = 'regular',
-  color,
-  className,
-  style,
-  'aria-hidden': ariaHidden = true,
-  'aria-label': ariaLabel,
-}: AppIconProps) {
-  const Component = ICON_REGISTRY[name]
-  if (!Component) {
-    return null
+                       name,
+                       size = 20,
+                       weight = 'regular',
+                       color,
+                       className,
+                       style,
+                       'aria-hidden': ariaHidden = true,
+                       'aria-label': ariaLabel,
+                     }: AppIconProps) {
+  const icon = resolveIcon(name);
+
+  if (!icon) {
+    return null;
   }
-  return (
-    <Component
-      size={size}
-      weight={weight}
-      color={color}
-      className={className}
-      style={style}
-      aria-hidden={ariaHidden}
-      aria-label={ariaLabel}
-    />
-  )
+
+  return createElement(icon, {
+    size,
+    weight,
+    color,
+    className,
+    style,
+    'aria-hidden': ariaHidden,
+    'aria-label': ariaLabel,
+  });
 }
