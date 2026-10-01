@@ -1,6 +1,6 @@
 export interface NavItemConfig {
   to: string
   label: string
-  icon: 'home' | 'state' | 'routing' | 'migration' | 'about'
+  icon: 'house' | 'cpu' | 'compass' | 'arrows-left-right' | 'info'
   end?: boolean
 }

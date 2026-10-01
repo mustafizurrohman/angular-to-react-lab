@@ -3,7 +3,7 @@ import type { ArchitecturalPrinciple, MigrationStep } from '../types/about.ts'
 export const ARCHITECTURAL_PRINCIPLES: ArchitecturalPrinciple[] = [
   {
     title: 'Component-Driven Design & Composition',
-    icon: 'puzzle',
+    icon: 'puzzle-piece',
     description:
       'In React, components are first-class JavaScript functions returning JSX. Instead of class hierarchies and NgModule declarations, React relies on function composition and custom hooks for maximum code reuse and testability.',
   },
@@ -21,7 +21,7 @@ export const ARCHITECTURAL_PRINCIPLES: ArchitecturalPrinciple[] = [
   },
   {
     title: 'Modern React 19 & Compiler Optimizations',
-    icon: 'rocket',
+    icon: 'rocket-launch',
     description:
       'With React 19 and the React Compiler, manual memoization (useMemo, useCallback) is automatically managed at compile time, eliminating boilerplate while guaranteeing peak performance.',
   },

@@ -21,7 +21,7 @@ export function MobileHeader({ title, isOpen = false, onOpenMenu }: MobileHeader
           aria-expanded={isOpen}
           aria-controls="main-sidebar"
         >
-          <Icon name={isOpen ? 'close' : 'menu'} size={24} aria-hidden="true" />
+          <Icon name={isOpen ? 'x' : 'list'} size={24} aria-hidden="true" />
         </button>
         <span className="mobile-title">{title}</span>
       </div>

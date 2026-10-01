@@ -5,21 +5,6 @@ import * as PhosphorIcons from '@phosphor-icons/react';
 
 type PhosphorIconComponent = ElementType<IconProps>;
 
-const ICON_ALIASES = {
-  home: 'House',
-  state: 'Cpu',
-  routing: 'Compass',
-  migration: 'ArrowsLeftRight',
-  about: 'Info',
-  logout: 'SignOut',
-  'sign-out': 'SignOut',
-  menu: 'List',
-  close: 'X',
-  puzzle: 'PuzzlePiece',
-  rocket: 'RocketLaunch',
-  search: 'MagnifyingGlass',
-} as const;
-
 export type IconName = string;
 
 export interface AppIconProps {
@@ -42,9 +27,7 @@ function toPascalCase(name: string): string {
 }
 
 function resolveIcon(name: IconName): PhosphorIconComponent | null {
-  const iconName =
-      ICON_ALIASES[name as keyof typeof ICON_ALIASES] ??
-      toPascalCase(name);
+  const iconName = toPascalCase(name);
 
   const icon = (PhosphorIcons as Record<string, unknown>)[iconName];
 

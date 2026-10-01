@@ -4,27 +4,27 @@ export const NAVIGATION_ITEMS: NavItemConfig[] = [
   {
     to: '/',
     label: 'Home',
-    icon: 'home',
+    icon: 'house',
     end: true,
   },
   {
     to: '/state',
     label: 'Interactive State',
-    icon: 'state',
+    icon: 'cpu',
   },
   {
     to: '/routing',
     label: 'Client-Side Routing',
-    icon: 'routing',
+    icon: 'compass',
   },
   {
     to: '/angular-to-react',
     label: 'Angular to React',
-    icon: 'migration',
+    icon: 'arrows-left-right',
   },
   {
     to: '/about',
     label: 'About',
-    icon: 'about',
+    icon: 'info',
   },
 ]
