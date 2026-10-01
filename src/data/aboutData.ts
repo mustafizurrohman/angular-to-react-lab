@@ -3,25 +3,25 @@ import type { ArchitecturalPrinciple, MigrationStep } from '../types/about.ts'
 export const ARCHITECTURAL_PRINCIPLES: ArchitecturalPrinciple[] = [
   {
     title: 'Component-Driven Design & Composition',
-    icon: '🧩',
+    icon: 'puzzle',
     description:
       'In React, components are first-class JavaScript functions returning JSX. Instead of class hierarchies and NgModule declarations, React relies on function composition and custom hooks for maximum code reuse and testability.',
   },
   {
     title: 'Unidirectional Data Flow',
-    icon: '🌊',
+    icon: 'waves',
     description:
       'Data flows strictly downwards via immutable props, and state changes propagate upwards through event callbacks. This single-source-of-truth flow eliminates unexpected side effects common in complex two-way binding graphs.',
   },
   {
     title: 'Declarative UI over DOM Manipulation',
-    icon: '⚡',
+    icon: 'lightning',
     description:
       'React renders the interface as a pure projection of current state and props. Developers declare what the UI should look like at any point in time, and React handles efficient reconciliation and DOM mutation.',
   },
   {
     title: 'Modern React 19 & Compiler Optimizations',
-    icon: '🚀',
+    icon: 'rocket',
     description:
       'With React 19 and the React Compiler, manual memoization (useMemo, useCallback) is automatically managed at compile time, eliminating boilerplate while guaranteeing peak performance.',
   },

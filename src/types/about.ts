@@ -1,6 +1,8 @@
+import type { IconName } from '../components/common/Icon.tsx'
+
 export interface ArchitecturalPrinciple {
   title: string
-  icon: string
+  icon: IconName
   description: string
 }
 

@@ -1,3 +1,5 @@
+import { Icon } from '../common/Icon.tsx'
+
 interface CodePaneProps {
   label: string
   labelClass: string
@@ -25,8 +27,10 @@ export function CodePane({
           onClick={() => onCopy(code, copyId)}
           aria-label={`Copy ${label} code`}
           aria-live="polite"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
         >
-          {isCopied ? 'Copied!' : 'Copy'}
+          <Icon name={isCopied ? 'check' : 'copy'} size={13} aria-hidden="true" />
+          <span>{isCopied ? 'Copied!' : 'Copy'}</span>
         </button>
       </div>
       <pre className="code-block" tabIndex={0} aria-label={`${label} code snippet`}>

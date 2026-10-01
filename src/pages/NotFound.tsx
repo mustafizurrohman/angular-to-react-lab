@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/common/PageHeader.tsx'
+import { Icon } from '../components/common/Icon.tsx'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import './Pages.css'
 
@@ -8,6 +9,9 @@ export function NotFound() {
 
   return (
     <div className="page-wrapper text-center">
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+        <Icon name="warning" size={48} color="var(--accent)" weight="duotone" />
+      </div>
       <PageHeader
         title="404"
         subtitle="The requested lab module or route could not be found."

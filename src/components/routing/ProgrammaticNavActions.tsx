@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Icon } from '../common/Icon.tsx'
 
 export function ProgrammaticNavActions() {
   const navigate = useNavigate()
@@ -9,22 +10,28 @@ export function ProgrammaticNavActions() {
         type="button"
         className="counter-btn"
         onClick={() => navigate('/state')}
+        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
       >
-        Navigate to Interactive State Lab &rarr;
+        <span>Navigate to Interactive State Lab</span>
+        <Icon name="arrow-right" size={16} aria-hidden="true" />
       </button>
       <button
         type="button"
         className="counter-btn"
         onClick={() => navigate('/angular-to-react')}
+        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
       >
-        Navigate to Comparison Guide &rarr;
+        <span>Navigate to Comparison Guide</span>
+        <Icon name="arrow-right" size={16} aria-hidden="true" />
       </button>
       <button
         type="button"
         className="reset-btn"
         onClick={() => navigate(-1)}
+        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
       >
-        &larr; Go Back (History -1)
+        <Icon name="arrow-left" size={16} aria-hidden="true" />
+        <span>Go Back (History -1)</span>
       </button>
     </div>
   )

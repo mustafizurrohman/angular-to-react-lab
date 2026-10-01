@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../../hooks/useAuth.ts'
+import { Icon } from '../common/Icon.tsx'
 import './LoginMask.css'
 
 export function LoginMask() {
@@ -23,7 +24,7 @@ export function LoginMask() {
       <div className="login-card">
         <div className="login-header">
           <div className="login-badge" aria-hidden="true">
-            ⚛️
+            <Icon name="atom" size={40} weight="bold" color="var(--accent)" />
           </div>
           <h1 className="login-title">Sign In to React Lab</h1>
           <p className="login-subtitle">
@@ -33,23 +34,12 @@ export function LoginMask() {
 
         {error && (
           <div className="login-error" role="alert">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <Icon
+              name="warning-circle"
+              size={18}
               aria-hidden="true"
               style={{ flexShrink: 0 }}
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
+            />
             <span>{error}</span>
           </div>
         )}

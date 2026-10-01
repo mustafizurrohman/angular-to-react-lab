@@ -1,6 +1,7 @@
 import type { FormEvent } from 'react'
 import type { CartItem } from '../../types/state.ts'
 import { EmptyState } from '../common/EmptyState.tsx'
+import { Icon } from '../common/Icon.tsx'
 
 interface CartPlaygroundProps {
   cart: CartItem[]
@@ -67,8 +68,9 @@ export function CartPlayground({
                   className="qty-btn"
                   onClick={() => onDecrement(item.id)}
                   aria-label={`Decrease quantity of ${item.name}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  -
+                  <Icon name="minus" size={12} weight="bold" />
                 </button>
                 <span className="cart-item-qty" aria-label={`Quantity: ${item.quantity}`}>
                   {item.quantity}
@@ -78,16 +80,18 @@ export function CartPlayground({
                   className="qty-btn"
                   onClick={() => onIncrement(item.id)}
                   aria-label={`Increase quantity of ${item.name}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  +
+                  <Icon name="plus" size={12} weight="bold" />
                 </button>
                 <button
                   type="button"
                   className="remove-btn"
                   onClick={() => onRemove(item.id)}
                   aria-label={`Remove ${item.name} from cart`}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  &times;
+                  <Icon name="trash" size={15} />
                 </button>
               </div>
             </li>

@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { NAVIGATION_ITEMS } from '../data/navigationData.ts'
 import { NavIcon } from './navigation/NavIcon.tsx'
+import { Icon } from './common/Icon.tsx'
 import { useAuth } from '../hooks/useAuth.ts'
 import './SideNav.css'
 
@@ -28,7 +29,7 @@ export function SideNav({ isOpen, onClose }: SideNavProps) {
       >
         <div className="sidenav-header">
           <div className="logo-badge" aria-hidden="true">
-            ⚛️
+            <Icon name="atom" size={28} weight="bold" color="var(--accent)" />
           </div>
           <div className="brand-text">
             <h2>React Lab</h2>
@@ -57,7 +58,7 @@ export function SideNav({ isOpen, onClose }: SideNavProps) {
           {user && (
             <div className="sidenav-user-card">
               <div className="user-info">
-                <span className="user-icon" aria-hidden="true">👤</span>
+                <Icon name="user" size={16} weight="bold" className="user-icon" aria-hidden="true" />
                 <span className="user-name">{user.username}</span>
               </div>
               <button
