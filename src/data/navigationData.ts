@@ -8,9 +8,34 @@ export const NAVIGATION_ITEMS: NavItemConfig[] = [
     end: true,
   },
   {
+    to: '/features',
+    label: 'Feature Matrix',
+    icon: 'list-checks',
+  },
+  {
+    to: '/angular-to-react',
+    label: 'Migration Guide',
+    icon: 'arrows-left-right',
+  },
+  {
     to: '/state',
     label: 'Interactive State',
     icon: 'cpu',
+  },
+  {
+    to: '/forms',
+    label: 'Forms & Validation',
+    icon: 'check-square',
+  },
+  {
+    to: '/http',
+    label: 'HTTP & Interceptors',
+    icon: 'plugs-connected',
+  },
+  {
+    to: '/control-flow',
+    label: 'Control Flow & Defer',
+    icon: 'lightning',
   },
   {
     to: '/routing',
@@ -18,13 +43,8 @@ export const NAVIGATION_ITEMS: NavItemConfig[] = [
     icon: 'compass',
   },
   {
-    to: '/angular-to-react',
-    label: 'Angular to React',
-    icon: 'arrows-left-right',
-  },
-  {
     to: '/about',
-    label: 'About',
+    label: 'Architecture & SOLID',
     icon: 'info',
   },
 ]

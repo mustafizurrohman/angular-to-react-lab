@@ -1,7 +1,7 @@
 import { Icon, type IconName } from '../common/Icon.tsx'
 
 interface NavIconProps {
-  icon: 'house' | 'cpu' | 'compass' | 'arrows-left-right' | 'info'
+  icon: string
 }
 
 export function NavIcon({ icon }: NavIconProps) {

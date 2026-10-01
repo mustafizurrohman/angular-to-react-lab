@@ -6,6 +6,14 @@ export interface ArchitecturalPrinciple {
   description: string
 }
 
+export interface SolidArchitecturePrinciple {
+  principle: 'SRP' | 'OCP' | 'LSP' | 'ISP' | 'DIP'
+  title: string
+  angularApproach: string
+  reactApproach: string
+  description: string
+}
+
 export interface MigrationStep {
   step: string
   title: string

@@ -19,6 +19,13 @@ export function PatternCard({ pattern, copiedId, onCopy }: PatternCardProps) {
 
       <p className="pattern-explanation">{pattern.explanation}</p>
 
+      {pattern.solidPrinciple && (
+        <div className="solid-principle-badge-box">
+          <span className="solid-tag">SOLID</span>
+          <span className="solid-text">{pattern.solidPrinciple}</span>
+        </div>
+      )}
+
       <div className="code-comparison-grid">
         <CodePane
           label="🅰️ Angular Pattern"
@@ -38,6 +45,17 @@ export function PatternCard({ pattern, copiedId, onCopy }: PatternCardProps) {
           onCopy={onCopy}
         />
       </div>
+
+      {pattern.bestPractices && pattern.bestPractices.length > 0 && (
+        <div className="pattern-best-practices">
+          <strong>Key Takeaways:</strong>
+          <ul>
+            {pattern.bestPractices.map((tip, idx) => (
+              <li key={idx}>{tip}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
