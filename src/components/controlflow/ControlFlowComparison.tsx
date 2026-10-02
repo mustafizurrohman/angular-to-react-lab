@@ -1,60 +1,135 @@
 import { CodePane } from '../migration/CodePane.tsx'
 import { useClipboard } from '../../hooks/useClipboard.ts'
 
-const ANGULAR_CONTROL_FLOW_SNIPPET = `@if (tasks.length > 0) {
-  @let criticalCount = getCriticalCount();
-  <p>Critical: {{ criticalCount }}</p>
+const ANGULAR_CONTROL_FLOW_SNIPPET = `@if (tasks().length > 0) {
+  @let criticalTasks = getCriticalTasks();
+  @let criticalCount = criticalTasks.length;
 
-  @for (task of tasks; track task.id; let idx = $index; let first = $first; let count = $count) {
-    <div [class.first-row]="first">
-      #{{ idx + 1 }} / {{ count }}: {{ task.title }}
-    </div>
-  } @empty {
-    <p>No tasks remaining.</p>
+  <div class="metrics-bar">
+    <p>Critical Tasks: <strong>{{ criticalCount }}</strong></p>
+  </div>
+
+  @switch (filterMode()) {
+    @case ('priority') {
+      <div class="task-grid">
+        @for (task of tasks(); 
+              track task.id; 
+              let idx = $index; 
+              let isFirst = $first; 
+              let isLast = $last; 
+              let total = $count) {
+          <div class="task-card" [class.first-card]="isFirst" [class.last-card]="isLast">
+            <span class="index-pill">#{{ idx + 1 }} / {{ total }}</span>
+            <h4>{{ task.title }}</h4>
+            <span class="badge" [class]="task.priority">{{ task.priority | uppercase }}</span>
+          </div>
+        } @empty {
+          <p class="empty-notice">No tasks matching the selected priority.</p>
+        }
+      </div>
+    }
+    @default {
+      <app-task-table [tasks]="tasks()" />
+    }
   }
 } @else {
-  <p>Collection is completely empty.</p>
+  <div class="zero-state">
+    <p>Collection is completely empty. Create your first task above.</p>
+  </div>
 }
 
-<!-- Deferred Chunk Loading -->
-@defer (on viewport; prefetch on idle) {
-  <app-heavy-metrics-chart />
+<!-- Deferred Chunk Loading with Viewport Trigger & Skeleton Shimmer -->
+@defer (on viewport; on hover(infoBtn); prefetch on idle) {
+  <app-heavy-metrics-chart [data]="metricsData()" />
 } @placeholder (minimum 300ms) {
-  <div class="skeleton-chart" />
-} @loading (minimum 500ms) {
-  <app-spinner />
+  <div class="skeleton-chart">
+    <div class="shimmer-line"></div>
+    <span>Loading Chart Preview...</span>
+  </div>
+} @loading (after 100ms; minimum 500ms) {
+  <div class="spinner-container">
+    <app-spinner />
+    <span>Loading heavy module bundle...</span>
+  </div>
 } @error {
-  <p>Failed to load heavy chart module.</p>
-}`
+  <div class="error-notice">
+    <p>Failed to load heavy chart module.</p>
+    <button (click)="retryLoad()">Retry</button>
+  </div>
+}
 
-const REACT_CONTROL_FLOW_SNIPPET = `// React JSX Control Flow & Suspense
+<button #infoBtn type="button">Hover to Prefetch Chart</button>`
+
+const REACT_CONTROL_FLOW_SNIPPET = `import { lazy, Suspense, useMemo, useState, useTransition } from 'react';
+import { ErrorBoundary } from '../common/ErrorBoundary';
+
+// React Code-Splitting Chunk
 const HeavyMetricsChart = lazy(() => import('./HeavyMetricsChart'));
 
+export interface Task {
+  id: string;
+  title: string;
+  priority: 'low' | 'medium' | 'critical';
+}
+
 export function TaskOverview({ tasks }: { tasks: Task[] }) {
-  const criticalCount = tasks.filter(t => t.priority === 'critical').length;
+  const [filterMode, setFilterMode] = useState<'priority' | 'table'>('priority');
+  const [isPending, startTransition] = useTransition();
+
+  // Pure derived state calculation (SRP)
+  const criticalTasks = useMemo(
+    () => tasks.filter(t => t.priority === 'critical'),
+    [tasks]
+  );
+
+  if (tasks.length === 0) {
+    return (
+      <div className="zero-state">
+        <p>Collection is completely empty. Create your first task above.</p>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {tasks.length === 0 ? (
-        <p>No tasks remaining (Angular @empty equivalent).</p>
+    <div className="task-overview">
+      <div className="metrics-bar">
+        <p>Critical Tasks: <strong>{criticalTasks.length}</strong></p>
+      </div>
+
+      {/* Declarative Switch / Multi-branch Display */}
+      {filterMode === 'priority' ? (
+        <div className="task-grid">
+          {tasks.length === 0 ? (
+            <p className="empty-notice">No tasks matching the selected priority.</p>
+          ) : (
+            tasks.map((task, idx) => {
+              const isFirst = idx === 0;
+              const isLast = idx === tasks.length - 1;
+
+              return (
+                <div
+                  key={task.id} // Stable identity key for virtual DOM diffing
+                  className={\`task-card \${isFirst ? 'first-card' : ''} \${isLast ? 'last-card' : ''}\`.trim()}
+                >
+                  <span className="index-pill">#{idx + 1} / {tasks.length}</span>
+                  <h4>{task.title}</h4>
+                  <span className={\`badge \${task.priority}\`}>{task.priority.toUpperCase()}</span>
+                </div>
+              );
+            })
+          )}
+        </div>
       ) : (
-        <>
-          <p>Critical: {criticalCount}</p>
-          {tasks.map((task, idx) => (
-            <div key={task.id} className={idx === 0 ? 'first-row' : ''}>
-              #{idx + 1} / {tasks.length}: {task.title}
-            </div>
-          ))}
-        </>
+        <TaskTable tasks={tasks} />
       )}
 
-      {/* Deferred Loading with Suspense & ErrorBoundary */}
-      <ErrorBoundary fallback={<p>Failed to load heavy chart module.</p>}>
-        <Suspense fallback={<div className="skeleton-chart" />}>
-          <HeavyMetricsChart />
+      {/* Deferred Loading with Suspense & Error Boundary */}
+      <ErrorBoundary fallback={<p className="error-notice">Failed to load heavy chart module.</p>}>
+        <Suspense fallback={<div className="skeleton-chart">Loading Chart Preview...</div>}>
+          <HeavyMetricsChart data={criticalTasks} />
         </Suspense>
       </ErrorBoundary>
-    </>
+    </div>
   );
 }`
 

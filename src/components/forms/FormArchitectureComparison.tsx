@@ -7,28 +7,41 @@ const ANGULAR_REACTIVE_SNIPPET = `@Component({
   imports: [ReactiveFormsModule, CommonModule],
   template: \`
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <input formControlName="username" />
-      <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
-        Username is required (min 3 chars).
+      <div class="form-field">
+        <label>Username</label>
+        <input formControlName="username" />
+        <span class="err" *ngIf="form.controls.username.errors?.['required']">
+          Username is required.
+        </span>
+        <span class="err" *ngIf="form.controls.username.errors?.['minlength']">
+          Minimum 3 characters required.
+        </span>
+        <span class="err" *ngIf="form.controls.username.errors?.['userTaken']">
+          Username is already registered.
+        </span>
       </div>
 
-      <div formArrayName="emails">
-        <div *ngFor="let emailCtrl of emails.controls; let i = index">
-          <input [formControlName]="i" />
+      <div formArrayName="emails" class="emails-array">
+        <label>Email Addresses</label>
+        <div *ngFor="let emailCtrl of emails.controls; let i = index" class="email-row">
+          <input [formControlName]="i" placeholder="user@example.com" />
           <button type="button" (click)="removeEmail(i)">Remove</button>
         </div>
+        <button type="button" (click)="addEmail()">+ Add Another Email</button>
       </div>
-      <button type="button" (click)="addEmail()">+ Add Email</button>
 
-      <button type="submit" [disabled]="form.invalid">Submit</button>
+      <button type="submit" [disabled]="form.invalid || form.pending">
+        {{ form.pending ? 'Validating...' : 'Submit Profile' }}
+      </button>
     </form>
   \`
 })
 export class ProfileFormComponent {
   private fb = inject(NonNullableFormBuilder);
+  private userService = inject(UserService);
 
   form = this.fb.group({
-    username: ['', [Validators.required, Validators.minLength(3)], [this.checkUsernameAsync]],
+    username: ['', [Validators.required, Validators.minLength(3)], [this.checkUsernameAsync()]],
     role: ['developer'],
     emails: this.fb.array([this.fb.control('', [Validators.required, Validators.email])]),
     receiveNewsletter: [true],
@@ -47,6 +60,13 @@ export class ProfileFormComponent {
     this.emails.removeAt(index);
   }
 
+  private checkUsernameAsync(): AsyncValidatorFn {
+    return (control) => this.userService.checkUsername(control.value).pipe(
+      map(isTaken => isTaken ? { userTaken: true } : null),
+      catchError(() => of(null))
+    );
+  }
+
   onSubmit() {
     if (this.form.valid) {
       console.log('Submitted values:', this.form.getRawValue());
@@ -54,30 +74,82 @@ export class ProfileFormComponent {
   }
 }`
 
-const REACT_FORM_SNIPPET = `// Custom Reactive Form Hook adhering to SOLID principles
-export function useReactiveForm() {
-  const [values, setValues] = useState<ProfileFormValues>(INITIAL_VALUES);
-  const [touched, setTouched] = useState<FormTouched<ProfileFormValues>>({});
-  const [asyncError, setAsyncError] = useState<string | null>(null);
+const REACT_FORM_SNIPPET = `import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-  // Pure validation engine (SRP)
-  const syncErrors = useMemo(() => validateSync(values), [values]);
-  
-  // Pluggable async validation (DIP)
-  useEffect(() => {
-    const cancel = validateAsync(values.username, setAsyncError);
-    return cancel;
-  }, [values.username]);
+// Decoupled Zod Validation Schema (SRP)
+export const profileSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .refine(async (val) => {
+      const isAvailable = await checkUsernameAvailable(val);
+      return isAvailable;
+    }, 'Username is already registered'),
+  role: z.enum(['developer', 'designer', 'manager']),
+  emails: z
+    .array(z.string().email('Valid email address required'))
+    .min(1, 'At least one email is required'),
+  receiveNewsletter: z.boolean().default(true),
+  bio: z.string().optional(),
+});
 
-  const isValid = Object.keys(syncErrors).length === 0 && !asyncError;
+export type ProfileFormValues = z.infer<typeof profileSchema>;
 
-  const addEmail = () => setValues(v => ({ ...v, emails: [...v.emails, ''] }));
-  const removeEmail = (idx: number) => setValues(v => ({
-    ...v,
-    emails: v.emails.filter((_, i) => i !== idx)
-  }));
+export function ProfileFormPlayground({ onSubmitSuccess }: { onSubmitSuccess: (data: ProfileFormValues) => void }) {
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      username: '',
+      role: 'developer',
+      emails: [''],
+      receiveNewsletter: true,
+      bio: '',
+    },
+  });
 
-  return { values, touched, errors: { ...syncErrors, asyncError }, isValid, addEmail, removeEmail };
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'emails',
+  });
+
+  const onSubmit = async (values: ProfileFormValues) => {
+    await saveProfile(values);
+    onSubmitSuccess(values);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="form-field">
+        <label>Username</label>
+        <input {...register('username')} />
+        {errors.username && <span className="err">{errors.username.message}</span>}
+      </div>
+
+      <div className="emails-array">
+        <label>Email Addresses</label>
+        {fields.map((field, idx) => (
+          <div key={field.id} className="email-row">
+            <input {...register(\`emails.\${idx}\` as const)} placeholder="user@example.com" />
+            <button type="button" onClick={() => remove(idx)}>Remove</button>
+            {errors.emails?.[idx] && <span className="err">{errors.emails[idx]?.message}</span>}
+          </div>
+        ))}
+        <button type="button" onClick={() => append('')}>+ Add Another Email</button>
+      </div>
+
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Validating...' : 'Submit Profile'}
+      </button>
+    </form>
+  );
 }`
 
 export function FormArchitectureComparison() {
@@ -95,7 +167,7 @@ export function FormArchitectureComparison() {
           onCopy={copyToClipboard}
         />
         <CodePane
-          label="⚛️ React Composable Form Hook"
+          label="⚛️ React Composable Form Hook (RHF + Zod)"
           labelClass="react-label"
           code={REACT_FORM_SNIPPET}
           copyId="form-arch-react"

@@ -1,12 +1,17 @@
 import { CodePane } from '../migration/CodePane.tsx'
 import { useClipboard } from '../../hooks/useClipboard.ts'
 
-const ANGULAR_HTTP_SNIPPET = `// Angular Functional Interceptor & HttpClient
+const ANGULAR_HTTP_SNIPPET = `// Angular Functional Interceptor & HttpClient Pipeline
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { retry, catchError, throwError, switchMap } from 'rxjs';
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  const cloned = token
+  // Clone immutable request and attach headers
+  const authReq = token
     ? req.clone({
         setHeaders: {
           Authorization: \`Bearer \${token}\`,
@@ -15,9 +20,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       })
     : req;
 
-  return next(cloned).pipe(
+  return next(authReq).pipe(
     retry({ count: 2, delay: 1000 }),
     catchError((err: HttpErrorResponse) => {
+      if (err.status === 401) {
+        return authService.refreshToken().pipe(
+          switchMap(newToken => next(req.clone({
+            setHeaders: { Authorization: \`Bearer \${newToken}\` }
+          })))
+        );
+      }
       console.error('HTTP Error in interceptor:', err);
       return throwError(() => err);
     })
@@ -31,38 +43,49 @@ bootstrapApplication(AppComponent, {
   ]
 });`
 
-const REACT_HTTP_SNIPPET = `// React Composable Fetch with Interceptors & AbortController
-export function useFetchUsers() {
-  const [data, setData] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { token } = useAuth();
+const REACT_HTTP_SNIPPET = `// React Composable Fetch with Middleware & TanStack Query
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../../hooks/useAuth';
 
-  useEffect(() => {
-    const controller = new AbortController();
-    setLoading(true);
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
-    fetch('/api/users', {
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: \`Bearer \${token}\` } : {}),
-        'X-Request-Id': crypto.randomUUID()
+export function useUsersApi() {
+  const { token, refreshToken } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Custom Fetch client with interceptor logic & AbortController support
+  const apiClient = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+    const headers = new Headers(options.headers);
+    if (token) headers.set('Authorization', \`Bearer \${token}\`);
+    headers.set('X-Request-Id', crypto.randomUUID());
+
+    let res = await fetch(endpoint, { ...options, headers });
+
+    // Handle 401 Token Refresh
+    if (res.status === 401) {
+      const newToken = await refreshToken();
+      if (newToken) {
+        headers.set('Authorization', \`Bearer \${newToken}\`);
+        res = await fetch(endpoint, { ...options, headers });
       }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
-        return res.json();
-      })
-      .then(users => setData(users))
-      .catch(err => {
-        if (err.name !== 'AbortError') console.error(err);
-      })
-      .finally(() => setLoading(false));
+    }
 
-    return () => controller.abort(); // Automatic teardown cancellation
-  }, [token]);
+    if (!res.ok) throw new Error(\`HTTP \${res.status}: \${res.statusText}\`);
+    return res.json();
+  };
 
-  return { data, loading };
+  // Declarative TanStack Query with automatic background refetch & stale-time
+  const usersQuery = useQuery({
+    queryKey: ['users'],
+    queryFn: ({ signal }) => apiClient<User[]>('/api/users', { signal }),
+    staleTime: 1000 * 60 * 5, // 5 min cache
+  });
+
+  return usersQuery;
 }`
 
 export function HttpArchitectureComparison() {
@@ -80,7 +103,7 @@ export function HttpArchitectureComparison() {
           onCopy={copyToClipboard}
         />
         <CodePane
-          label="⚛️ React Fetch Middleware & AbortController"
+          label="⚛️ React Composable Fetch & TanStack Query"
           labelClass="react-label"
           code={REACT_HTTP_SNIPPET}
           copyId="http-arch-react"
